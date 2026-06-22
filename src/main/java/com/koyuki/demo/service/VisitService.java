@@ -8,6 +8,8 @@ import com.koyuki.demo.dto.request.VisitRequestDto;
 import com.koyuki.demo.dto.response.VisitResponseDto;
 import com.koyuki.demo.entity.Customer;
 import com.koyuki.demo.entity.Visit;
+import com.koyuki.demo.exception.CustomerNotFoundException;
+import com.koyuki.demo.exception.VisitNotFoundException;
 import com.koyuki.demo.repository.CustomerRepository;
 import com.koyuki.demo.repository.VisitRepository;
 
@@ -25,7 +27,7 @@ public class VisitService {
 	//来店記録登録
 	public VisitResponseDto createVisit(Long customerId, VisitRequestDto requestDto) {
 		Customer customer = customerRepository.findById(customerId)
-				.orElseThrow(() -> new RuntimeException("顧客が見つかりません"));
+				.orElseThrow(() -> new CustomerNotFoundException(customerId));
 		
 		Visit visit = new Visit();
 		
@@ -46,7 +48,7 @@ public class VisitService {
 	//顧客ごとの来店記録一覧取得
 	public List<VisitResponseDto> getVisitsByCustomerId(Long customerId) {
 		if (!customerRepository.existsById(customerId)) {
-			throw new RuntimeException("顧客が見つかりません");
+			throw new CustomerNotFoundException(customerId);
 		}
 		
 		return visitRepository.findByCustomerId(customerId)
@@ -58,7 +60,7 @@ public class VisitService {
 	//来店記録詳細取得
 	public VisitResponseDto getVisitById(Long id) {
 		Visit visit = visitRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("来店記録が見つかりません"));
+				.orElseThrow(() -> new VisitNotFoundException(id));
 		
 		return toResponseDto(visit);
 	}
@@ -66,7 +68,7 @@ public class VisitService {
 	//来店記録更新
 	public VisitResponseDto updateVisit(Long id, VisitRequestDto requestDto) {
 		Visit visit = visitRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("来店記録が見つかりません"));
+				.orElseThrow(() -> new VisitNotFoundException(id));
 		
 		visit.setVisitDate(requestDto.getVisitDate());
 		visit.setHairLength(requestDto.getHairLength());
@@ -84,7 +86,7 @@ public class VisitService {
 	//来店記録削除
 	public void deleteVisit(Long id) {
 		if(!visitRepository.existsById(id)) {
-			throw new RuntimeException("来店記録が見つかりません");
+			throw new VisitNotFoundException(id);
 		}
 		
 		visitRepository.deleteById(id);

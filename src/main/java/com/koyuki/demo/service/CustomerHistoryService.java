@@ -8,6 +8,7 @@ import com.koyuki.demo.dto.response.CustomerHistoryItemDto;
 import com.koyuki.demo.dto.response.CustomerHistoryResponseDto;
 import com.koyuki.demo.entity.Customer;
 import com.koyuki.demo.entity.Visit;
+import com.koyuki.demo.exception.CustomerNotFoundException;
 import com.koyuki.demo.repository.CustomerRepository;
 import com.koyuki.demo.repository.TreatmentResultRepository;
 import com.koyuki.demo.repository.VisitRepository;
@@ -29,8 +30,8 @@ public class CustomerHistoryService {
     }
 
     public CustomerHistoryResponseDto getCustomerHistory(Long customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("顧客が見つかりません"));
+    	Customer customer = customerRepository.findById(customerId)
+    	        .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
         List<Visit> visits = visitRepository.findByCustomerId(customerId);
 

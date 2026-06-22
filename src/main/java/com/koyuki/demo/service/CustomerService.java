@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.koyuki.demo.dto.request.CustomerRequestDto;
 import com.koyuki.demo.dto.response.CustomerResponseDto;
 import com.koyuki.demo.entity.Customer;
+import com.koyuki.demo.exception.CustomerNotFoundException;
 import com.koyuki.demo.repository.CustomerRepository;
 
 @Service
@@ -43,16 +44,16 @@ public class CustomerService {
 
     // 顧客詳細取得
     public CustomerResponseDto getCustomerById(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("顧客が見つかりません"));
+    	Customer customer = customerRepository.findById(id)
+    	        .orElseThrow(() -> new CustomerNotFoundException(id));
 
         return toResponseDto(customer);
     }
 
     // 顧客更新
     public CustomerResponseDto updateCustomer(Long id, CustomerRequestDto requestDto) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("顧客が見つかりません"));
+    	Customer customer = customerRepository.findById(id)
+    	        .orElseThrow(() -> new CustomerNotFoundException(id));
 
         customer.setName(requestDto.getName());
         customer.setPhone(requestDto.getPhone());
@@ -68,7 +69,7 @@ public class CustomerService {
     // 顧客削除
     public void deleteCustomer(Long id) {
         if (!customerRepository.existsById(id)) {
-            throw new RuntimeException("顧客が見つかりません");
+            throw new CustomerNotFoundException(id);
         }
 
         customerRepository.deleteById(id);

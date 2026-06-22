@@ -6,6 +6,8 @@ import com.koyuki.demo.dto.request.TreatmentResultRequestDto;
 import com.koyuki.demo.dto.response.TreatmentResultResponseDto;
 import com.koyuki.demo.entity.TreatmentResult;
 import com.koyuki.demo.entity.Visit;
+import com.koyuki.demo.exception.TreatmentResultNotFoundException;
+import com.koyuki.demo.exception.VisitNotFoundException;
 import com.koyuki.demo.repository.TreatmentResultRepository;
 import com.koyuki.demo.repository.VisitRepository;
 
@@ -27,8 +29,8 @@ public class TreatmentResultService {
             Long visitId,
             TreatmentResultRequestDto requestDto) {
 
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new RuntimeException("来店記録が見つかりません"));
+    	Visit visit = visitRepository.findById(visitId)
+    	        .orElseThrow(() -> new VisitNotFoundException(visitId));
 
         TreatmentResult treatmentResult = new TreatmentResult();
 
@@ -46,8 +48,8 @@ public class TreatmentResultService {
 
     // 施術結果詳細取得
     public TreatmentResultResponseDto getTreatmentResultById(Long id) {
-        TreatmentResult treatmentResult = treatmentResultRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("施術結果が見つかりません"));
+    	TreatmentResult treatmentResult = treatmentResultRepository.findById(id)
+    	        .orElseThrow(() -> new TreatmentResultNotFoundException(id));
 
         return toResponseDto(treatmentResult);
     }
@@ -57,8 +59,8 @@ public class TreatmentResultService {
             Long id,
             TreatmentResultRequestDto requestDto) {
 
-        TreatmentResult treatmentResult = treatmentResultRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("施術結果が見つかりません"));
+    	TreatmentResult treatmentResult = treatmentResultRepository.findById(id)
+    	        .orElseThrow(() -> new TreatmentResultNotFoundException(id));
 
         treatmentResult.setStyleName(requestDto.getStyleName());
         treatmentResult.setColorName(requestDto.getColorName());
@@ -73,8 +75,8 @@ public class TreatmentResultService {
 
     // 施術結果削除
     public void deleteTreatmentResult(Long id) {
-        if (!treatmentResultRepository.existsById(id)) {
-            throw new RuntimeException("施術結果が見つかりません");
+    	if (!treatmentResultRepository.existsById(id)) {
+    	    throw new TreatmentResultNotFoundException(id);
         }
 
         treatmentResultRepository.deleteById(id);
